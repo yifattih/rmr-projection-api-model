@@ -136,8 +136,8 @@ class Mifflin:
         height: float,
         weight: float,
         time_projection: np.ndarray,
-        weight_loss_rate: float,
         units: str = "imperial",
+        weight_loss_rate: float = 2,
         energy_deficit: float = 1000,
     ) -> None:
 
