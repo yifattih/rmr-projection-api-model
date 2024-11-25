@@ -1,4 +1,5 @@
 import numpy as np
+from coefficients import coefficients
 
 
 class HarrisBenedict:
@@ -61,7 +62,7 @@ class HarrisBenedict:
             return bmr, bmr_deficit
         else:
             bmr = (
-                66.5
+                66.47
                 + 13.75
                 * (self.weight - self.weight_loss_rate * self.time_projection)
                 + 5.003 * self.height
@@ -80,13 +81,13 @@ class HarrisBenedict:
                     - (self.weight_loss_rate * self.time_projection)
                 )
                 + 4.7 * (self.height)
-                - 4.7 * (self.age)
+                - 4.676 * (self.age)
             )
             bmr_deficit = bmr - self.energy_deficit
             return bmr, bmr_deficit
         else:
             bmr = (
-                655.1
+                65.1
                 + 9.563
                 * (self.weight - self.weight_loss_rate * self.time_projection)
                 + 1.850 * self.height
@@ -136,6 +137,7 @@ class Mifflin:
         height: float,
         weight: float,
         time_projection: np.ndarray,
+        sex: str,
         units: str = "imperial",
         weight_loss_rate: float = 2,
         energy_deficit: float = 1000,
@@ -158,12 +160,15 @@ class Mifflin:
             "Units must be on " "imperial or metric" "system"
         )
 
+        assert sex in ['male', 'female'], ('Sex must be male or female')
+
         if units == "imperial":
             self.height_unit = "inches"
             self.weight_unit = "lbs"
         else:
             self.height_unit = "cm"
             self.weight_unit = "kg"
+        
 
         self.age = age
         self.height = height
@@ -172,7 +177,26 @@ class Mifflin:
         self.energy_deficit = energy_deficit
         self.units = units
         self.weight_loss_rate = weight_loss_rate
+        self.sex = sex
+        self.coefficients = self._get_coefficients()
 
+    def _get_coefficients(self):
+        self.coefficients = coefficients[self.__name__][self.sex][self.units]
+
+    def get_bmr(self) -> float:
+        bmr = (
+            (self.coefficients['weight'] * self.weight)
+            + (self.coefficients['height'] * self.height)
+            + (self.coefficients['age'] * self.age)
+            + self.coefficients['bias']
+            )
+        return bmr
+    
+    def get_bmr_and_deficit(self) -> tuple[np.array, np.array]:
+        bmr = self.get_bmr()
+        bmr_deficit = bmr - self.energy_deficit
+        return bmr, bmr_deficit
+    
     def men_eq(self) -> tuple[np.ndarray, np.ndarray]:
         if self.units == "imperial":
             bmr = (
