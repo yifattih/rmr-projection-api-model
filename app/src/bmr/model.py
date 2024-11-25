@@ -26,12 +26,12 @@ class Builder:
 
     def build(self) -> Exception | None:
 
-        # here, both equaations are stored in a dictionary so that either can be
+        # here, both equations are stored in a dictionary so that either can be
         # chosen downstream by using the equation keyword.
         # valid kewords:
-        # "HarrisBenedict" - Haris Benedict equation
-        # "Mifflin" - Mifflin-St. Jeor equation
-        # 
+        #       "HarrisBenedict" - Haris Benedict equation
+        #       "Mifflin" - Mifflin-St. Jeor equation
+    
          
         try:
             self.equations["HarrisBenedict"] = HarrisBenedict(
