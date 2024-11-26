@@ -1,8 +1,8 @@
 import numpy as np
 from typing import TypeAlias
-from .helpers import time_projection as time_proj
-from .helpers import weight_projection as weight_proj
-from .helpers.equations import HarrisBenedict, Mifflin
+from app.src.bmr.helpers import time_projection as time_proj
+from app.src.bmr.helpers import weight_projection as weight_proj
+from app.src.bmr.helpers.equations import HarrisBenedict, Mifflin
 
 JSONType: TypeAlias = dict[str, str | None]
 
@@ -39,6 +39,7 @@ class Builder:
                 height=self.height,
                 weight=self.weight,
                 time_projection=self.time_proj,
+                sex=self.sex,
                 units=self.units,
                 weight_loss_rate=self.weight_loss_rate,
                 energy_deficit=self.energy_deficit,
@@ -49,6 +50,7 @@ class Builder:
                 height=self.height,
                 weight=self.weight,
                 time_projection=self.time_proj,
+                sex=self.sex,
                 units=self.units,
                 weight_loss_rate=self.weight_loss_rate,
                 energy_deficit=self.energy_deficit,
@@ -68,10 +70,7 @@ class Builder:
             f"Valid equations: {self.equations.keys()}"
         )
         
-        if self.sex == "men":
-            self.bmr, self.bmr_deficit = self.equations[equation].men_eq()
-        else:
-            self.bmr, self.bmr_deficit = self.equations[equation].female_eq()
+        self.bmr, self.bmr_deficit = self.equations[equation].get_bmr_and_deficit()
 
     def jasonable_dict(self) -> dict:
         return {

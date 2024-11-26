@@ -17,11 +17,13 @@ class TestEquationsMifflin(unittest.TestCase):
         weight_initial = 10
         weight_loss_rate = 2
         energy_deficit = 0
+        sex = 'male'
         mifflin = Mifflin(
             age=age,
             height=height,
             weight=weight_initial,
             time_projection=time_projected,
+            sex=sex,
             weight_loss_rate=weight_loss_rate,
             energy_deficit=energy_deficit
         )
@@ -44,11 +46,13 @@ class TestEquationsMifflin(unittest.TestCase):
         units = "imperial"
         weight_loss_rate = 2
         energy_deficit = 0
+        sex = 'male'
         mifflin = Mifflin(
             age=age,
             height=height,
             weight=weight_initial,
             time_projection=time_projected,
+            sex=sex,
             weight_loss_rate=weight_loss_rate,
             energy_deficit=energy_deficit
         )
@@ -73,6 +77,7 @@ class TestEquationsMifflin(unittest.TestCase):
         weight_initial = 10
         energy_deficit = 0
         weight_loss_rate = 0.5
+        sex = 'male'
         units = 'metric'
         with pytest.raises(AssertionError):
             Mifflin(
@@ -80,6 +85,7 @@ class TestEquationsMifflin(unittest.TestCase):
                 height=height,
                 weight=weight_initial,
                 time_projection=time_projected,
+                sex=sex,
                 weight_loss_rate=weight_loss_rate,
                 energy_deficit=energy_deficit
             )
@@ -93,11 +99,13 @@ class TestEquationsMifflin(unittest.TestCase):
         weight_initial = np.array([100, 98, 88])
         energy_deficit = 0
         weight_loss_rate = 2
+        sex = 'male'
         with pytest.raises(AssertionError):
             Mifflin(
                 age=age,
                 height=height,
                 time_projection=time_projected,
+                sex=sex,
                 weight=weight_initial,  # type: ignore
                 weight_loss_rate=weight_loss_rate,
                 energy_deficit=energy_deficit
@@ -112,11 +120,13 @@ class TestEquationsMifflin(unittest.TestCase):
         weight_initial = np.array([100, 98, 88])
         energy_deficit = 0
         weight_loss_rate = 0.5
+        sex = 'male'
         with pytest.raises(AssertionError):
             Mifflin(
                 age=age,
                 height=height,
                 time_projection=time_projected,
+                sex=sex,
                 weight=weight_initial,  # type: ignore
                 weight_loss_rate=weight_loss_rate,
                 energy_deficit=energy_deficit
@@ -131,11 +141,13 @@ class TestEquationsMifflin(unittest.TestCase):
         weight_initial = -1
         energy_deficit = 0
         weight_loss_rate = 0.2
+        sex = 'male'
         with pytest.raises(AssertionError):
             Mifflin(
                 age=age,
                 height=height,
                 time_projection=time_projected,
+                sex=sex,
                 weight=weight_initial,
                 weight_loss_rate=weight_loss_rate,
                 energy_deficit=energy_deficit
@@ -150,11 +162,55 @@ class TestEquationsMifflin(unittest.TestCase):
         weight_initial = 10
         energy_deficit = -10
         weight_loss_rate = 0.5
+        sex = 'male'
         with pytest.raises(AssertionError):
                 Mifflin(
                     age=age,
                     height=height,
                     time_projection=time_projected,
+                    sex=sex,
+                    weight=weight_initial,
+                    weight_loss_rate=weight_loss_rate,
+                    energy_deficit=energy_deficit
+                    )
+    
+    def test_equations_mifflin_raises_assertion_sex_invalid(
+        self,
+    ) -> None:
+        age = 22
+        height = 5.5
+        time_projected = np.array([1, 2, 3])
+        weight_initial = 10
+        energy_deficit = -10
+        weight_loss_rate = 0.5
+        sex = 'apple' # non mae or female valuess for sex
+        with pytest.raises(AssertionError):
+                Mifflin(
+                    age=age,
+                    height=height,
+                    time_projection=time_projected,
+                    sex=sex,
+                    weight=weight_initial,
+                    weight_loss_rate=weight_loss_rate,
+                    energy_deficit=energy_deficit
+                    )
+                
+    def test_equations_mifflin_raises_assertion_sex_empty(
+        self,
+    ) -> None:
+        age = 22
+        height = 5.5
+        time_projected = np.array([1, 2, 3])
+        weight_initial = 10
+        energy_deficit = -10
+        weight_loss_rate = 0.5
+        sex = ''
+        with pytest.raises(AssertionError):
+                Mifflin(
+                    age=age,
+                    height=height,
+                    time_projection=time_projected,
+                    sex=sex,
                     weight=weight_initial,
                     weight_loss_rate=weight_loss_rate,
                     energy_deficit=energy_deficit
@@ -188,11 +244,13 @@ class TestEquationsMifflin(unittest.TestCase):
         time_projected = np.array([0])
         weight_loss_rate = 2
         units = 'imperial'
+        sex = 'male'
         mifflin = Mifflin(
             age=age,
             height=height,
             weight=weight_initial,
             time_projection=time_projected,
+            sex=sex,
             weight_loss_rate=weight_loss_rate,
             units=units
 
@@ -202,7 +260,7 @@ class TestEquationsMifflin(unittest.TestCase):
             np.array([856.18]),
         )
         (bmr_actual, bmr_deficit_actual) = np.round(
-            mifflin.men_eq(), 2
+            mifflin.get_bmr_and_deficit(), 2
         )
         for i in range(0, len(bmr_expected)):
             self.assertEqual(bmr_expected[i], bmr_actual[i])
@@ -215,11 +273,13 @@ class TestEquationsMifflin(unittest.TestCase):
         time_projected = np.array([0])
         weight_loss_rate = 0.5
         units = 'metric'
+        sex = 'male'
         mifflin = Mifflin(
             age=age,
             height=height,
             weight=weight_initial,
             time_projection=time_projected,
+            sex=sex,
             weight_loss_rate=weight_loss_rate,
             units = units
 
@@ -229,7 +289,7 @@ class TestEquationsMifflin(unittest.TestCase):
             np.array([856.12]),
         )
         (bmr_actual, bmr_deficit_actual) = np.round(
-            mifflin.men_eq(), 2
+            mifflin.get_bmr_and_deficit(), 2
         )
         for i in range(0, len(bmr_expected)):
             self.assertEqual(bmr_expected[i], bmr_actual[i])
@@ -243,11 +303,13 @@ class TestEquationsMifflin(unittest.TestCase):
         time_projected = np.array([0])
         weight_loss_rate = 2
         units = 'imperial'
+        sex = 'female'
         mifflin = Mifflin(
                 age=age,
                 height=height,
                 weight=weight_initial,
                 time_projection=time_projected,
+                sex=sex,
                 weight_loss_rate=weight_loss_rate,
                 units=units
 
@@ -258,7 +320,7 @@ class TestEquationsMifflin(unittest.TestCase):
         )
 
         (bmr_actual, bmr_deficit_actual) = np.round(
-            mifflin.female_eq(), 2
+            mifflin.get_bmr_and_deficit(), 2
         )
         for i in range(0, len(bmr_expected)):
             self.assertEqual(bmr_expected[i], bmr_actual[i])
@@ -271,11 +333,13 @@ class TestEquationsMifflin(unittest.TestCase):
         time_projected = np.array([0])
         weight_loss_rate = 0.5
         units = 'metric'
+        sex = 'female'
         mifflin = Mifflin(
                 age=age,
                 height=height,
                 weight=weight_initial,
                 time_projection=time_projected,
+                sex=sex,
                 weight_loss_rate=weight_loss_rate,
                 units=units
 
@@ -285,7 +349,7 @@ class TestEquationsMifflin(unittest.TestCase):
             np.array([690.12]),
         )
         (bmr_actual, bmr_deficit_actual) = np.round(
-            mifflin.female_eq(), 2
+            mifflin.get_bmr_and_deficit(), 2
         )
         for i in range(0, len(bmr_expected)):
             self.assertEqual(bmr_expected[i], bmr_actual[i])

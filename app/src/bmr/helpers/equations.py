@@ -1,6 +1,5 @@
 import numpy as np
-from coefficients import coefficients
-
+from app.src.bmr.helpers.coefficients import coefficients
 
 class HarrisBenedict:
     def __init__(
@@ -9,6 +8,7 @@ class HarrisBenedict:
         height: float,
         weight: float,
         time_projection: np.ndarray,
+        sex: str,
         units: str = "imperial",
         weight_loss_rate: float = 2,
         energy_deficit: float = 1000,
@@ -45,56 +45,25 @@ class HarrisBenedict:
         self.weight_loss_rate = weight_loss_rate
         self.energy_deficit = energy_deficit
         self.units = units
+        self.sex = sex
 
-    def men_eq(self) -> tuple[np.ndarray, np.ndarray]:
-        if self.units == "imperial":
-            bmr = (
-                66.47
-                + 6.24
-                * (
-                    self.weight
-                    - (self.weight_loss_rate * self.time_projection)
-                )
-                + 12.7 * self.height
-                - 6.76 * self.age
-            )
-            bmr_deficit = bmr - self.energy_deficit
-            return bmr, bmr_deficit
-        else:
-            bmr = (
-                66.47
-                + 13.75
-                * (self.weight - self.weight_loss_rate * self.time_projection)
-                + 5.003 * self.height
-                - 6.75 * self.age
-            )
-            bmr_deficit = bmr - self.energy_deficit
-            return bmr, bmr_deficit
+        self.coefficients = coefficients['HarrisBenedict'][self.sex][self.units]
+        # make sure the coefficients are loaded
+        assert self.coefficients != None
 
-    def female_eq(self) -> tuple[np.ndarray, np.ndarray]:
-        if self.units == "imperial":
-            bmr = (
-                65.51
-                + 4.34
-                * (
-                    self.weight
-                    - (self.weight_loss_rate * self.time_projection)
-                )
-                + 4.7 * (self.height)
-                - 4.676 * (self.age)
+    def get_bmr(self) -> float:
+        bmr = (
+            (self.coefficients['weight'] * (self.weight - (self.weight_loss_rate * self.time_projection)))
+            + (self.coefficients['height'] * self.height)
+            + (self.coefficients['age'] * self.age)
+            + self.coefficients['bias']
             )
-            bmr_deficit = bmr - self.energy_deficit
-            return bmr, bmr_deficit
-        else:
-            bmr = (
-                65.1
-                + 9.563
-                * (self.weight - self.weight_loss_rate * self.time_projection)
-                + 1.850 * self.height
-                - 4.676 * self.age
-            )
-            bmr_deficit = bmr - self.energy_deficit
-            return bmr, bmr_deficit
+        return bmr
+    
+    def get_bmr_and_deficit(self) -> tuple[np.array, np.array]:
+        bmr = self.get_bmr()
+        bmr_deficit = bmr - self.energy_deficit
+        return bmr, bmr_deficit
 
     def __str__(self) -> str:
         return (
@@ -178,85 +147,25 @@ class Mifflin:
         self.units = units
         self.weight_loss_rate = weight_loss_rate
         self.sex = sex
-        self.coefficients = self._get_coefficients()
 
-    def _get_coefficients(self):
-        self.coefficients = coefficients[self.__name__][self.sex][self.units]
+        self.coefficients = coefficients['Mifflin'][self.sex][self.units]
+        # make sure the coefficients are loaded
+        assert self.coefficients != None
 
     def get_bmr(self) -> float:
         bmr = (
-            (self.coefficients['weight'] * self.weight)
+            (self.coefficients['weight'] * (self.weight - (self.weight_loss_rate * self.time_projection)))
             + (self.coefficients['height'] * self.height)
             + (self.coefficients['age'] * self.age)
             + self.coefficients['bias']
             )
         return bmr
     
-    def get_bmr_and_deficit(self) -> tuple[np.array, np.array]:
+    def get_bmr_and_deficit(self) -> tuple[np.ndarray, np.ndarray]:
         bmr = self.get_bmr()
         bmr_deficit = bmr - self.energy_deficit
         return bmr, bmr_deficit
     
-    def men_eq(self) -> tuple[np.ndarray, np.ndarray]:
-        if self.units == "imperial":
-            bmr = (
-                4.536
-                * (
-                    self.weight
-                    - (self.weight_loss_rate * self.time_projection)
-                )
-                + (15.875 * self.height)
-                - (5 * self.age)
-                + 5
-            )
-
-            bmr_deficit = bmr - self.energy_deficit
-            return bmr, bmr_deficit
-        else:
-            bmr = (
-                10
-                * (
-                    self.weight
-                    - (self.weight_loss_rate * self.time_projection)
-                )
-                + (6.25 * self.height)
-                - (5 * self.age)
-                + 5
-            )
-
-            bmr_deficit = bmr - self.energy_deficit
-            return bmr, bmr_deficit
-
-    def female_eq(self) -> tuple[np.ndarray, np.ndarray]:
-        if self.units == "imperial":
-            bmr = (
-                4.536
-                * (
-                    self.weight
-                    - (self.weight_loss_rate * self.time_projection)
-                )
-                + (15.875 * self.height)
-                - (5 * self.age)
-                - 161
-            )
-
-            bmr_deficit = bmr - self.energy_deficit
-            return bmr, bmr_deficit
-        else:
-            bmr = (
-                10
-                * (
-                    self.weight
-                    - (self.weight_loss_rate * self.time_projection)
-                )
-                + (6.25 * self.height)
-                - (5 * self.age)
-                - 161
-            )
-
-            bmr_deficit = bmr - self.energy_deficit
-            return bmr, bmr_deficit
-
     def __str__(self) -> str:
         return (
             f"Mifflin-St. Jeor BMR equation for a {self.age}-years "
