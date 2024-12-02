@@ -15,8 +15,6 @@ services:
     build:
       context: api_service
       dockerfile: Dockerfile
-    volumes:
-      - ../..:/workspaces:cached         # Mount source code for hot-reloading if desired
     network_mode: service:devcontainer   # Puts app and devcontainer in the same network so browsing http://127.0.0.1:8080 works
     environment:
       - PORT=8000
