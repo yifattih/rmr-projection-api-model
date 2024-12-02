@@ -1,5 +1,6 @@
 services:
   devcontainer:
+    container_name: development-service
     build: 
       context: .devcontainer
       dockerfile: Dockerfile
@@ -7,9 +8,10 @@ services:
       - ../..:/workspaces:cached      
     command: sleep infinity
     ports:
-      - "80:8000"
+      - "8000:8000"
 
   api-service:
+    container_name: api-service
     build:
       context: api_service
       dockerfile: Dockerfile

@@ -22,4 +22,4 @@ COPY src/ /api_service/src/
 EXPOSE 8000
 
 # Copy the app code into the container
-CMD ["uvicorn", "api_service.src.main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "8000"]
