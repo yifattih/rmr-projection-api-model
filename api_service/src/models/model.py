@@ -1,5 +1,5 @@
-from time_projection import TimeProjection
-from equations import Equations
+from .time_projection import TimeProjection
+from .equations import Equations
 
 
 class RMRModel:

@@ -1,5 +1,5 @@
 import numpy as np
-from coefficients import MIFFLINSTJEOR
+from .coefficients import MIFFLINSTJEOR
 
 
 class Equations:
