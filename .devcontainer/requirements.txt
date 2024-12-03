@@ -1,9 +1,11 @@
 numpy
 Flask
+fastapi
+uvicorn
+pydantic
 pytest
-bs4
 pytest-cov
+pytest-rich
 flake8
 black
 coverage
-flasgger
