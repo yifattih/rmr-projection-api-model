@@ -2,24 +2,35 @@
 FROM python:3.11-slim
 
 # Install updates
-RUN apt-get update && apt-get upgrade -y && apt-get install -y
+RUN apt-get autoremove \
+    && groupadd -f -r yifattih \
+    && useradd -r -g yifattih -m -d /home/yifattih -s /bin/bash yifattih
+
+# Create a group and user (with error handling if already exists)
+# RUN groupadd -f -r yifattih \
+#     && useradd -r -g yifattih -m -d /home/yifattih -s /bin/bash yifattih
 
 # Set the working directory for the app
 WORKDIR /api_service
 
-# Update pip
-RUN pip install --upgrade pip
+# Set ownership permissions to working directory
+RUN chown -R yifattih:yifattih /api_service
 
-# Copy app-specific requirements and install them
+# Change user
+USER yifattih 
+
+# Copy app-specific requirements
 COPY requirements.txt /api_service/
-RUN pip install --no-cache-dir -r requirements.txt
 
+# Update pip and and install requirements
+RUN  pip install --user --upgrade pip \
+    && pip install --user --no-cache-dir -r requirements.txt
+
+# Add the user's local bin directory to PATH
+ENV PATH="/home/yifattih/.local/bin:$PATH"
 
 # Copy the app code into the container
 COPY src/ /api_service/src/
-
-# Expose port
-EXPOSE 8000
 
 # Copy the app code into the container
 CMD ["uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "3"]
