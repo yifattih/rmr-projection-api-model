@@ -2,7 +2,7 @@
 FROM python:3.11-slim
 
 # Install updates
-RUN apt-get update && apt-get upgrade -y && apt-get install -y
+RUN apt-get --no-install-recommends install -y build-essential
 
 USER nonroot
 
