@@ -162,5 +162,5 @@ jobs:
       - name: Push to Artifact Registry
         run: |
           image=${{ env.IMAGE_URI }}:${{ needs.semantic-release.outputs.IMAGE_TAG }}
-          gcloud auth configure-docker
+          gcloud auth configure-docker ${{ env.ARTIFACT_REGISTRY }}
           docker push $image
