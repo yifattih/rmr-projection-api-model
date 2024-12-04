@@ -59,6 +59,6 @@ If you'd like to contribute, please read the [Contributing Guidelines](CONTRIBUT
 This project is licensed under the MIT License. See the `LICENSE` file for more details.
 
 
-[![CI Pipeline](https://github.com/yifattih/bmr_calculator/actions/workflows/ci.yml/badge.svg?branch=dev)](https://github.com/yifattih/bmr_calculator/actions/workflows/ci.yml)
+[![CI/CD Pipeline](https://github.com/yifattih/rmr-projection-api-model/actions/workflows/push-image-production.yml/badge.svg)](https://github.com/yifattih/rmr-projection-api-model/actions/workflows/push-image-production.yml)
 ![Codecov](https://img.shields.io/codecov/c/gh/yifattih/bmr_calculator)
 ![Sonar Quality Gate](https://img.shields.io/sonar/quality_gate/yifattih_bmr_calculator?server=https%3A%2F%2Fsonarcloud.io)
