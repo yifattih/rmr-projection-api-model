@@ -5,11 +5,9 @@ on:
   push:
     branches:
       - dev
+      - core
       - 'feat/**'
       - '!feat/**-poc'
-  pull_request:
-    branches:
-      - dev
 
 jobs:
   build-test:
