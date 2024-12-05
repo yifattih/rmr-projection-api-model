@@ -12,7 +12,7 @@ async def calculate_rmr(input_data: RMRInput):
     Endpoint to calculate RMR over a time projection using Mifflin-St. Jeor
     equations.
     """
-    result = rmr_model.process(input_data.dict())
+    result = rmr_model.process(input_data.model_dump())
 
     if result["exit_code"] != 0:
         raise HTTPException(status_code=400, detail=result["error"])
