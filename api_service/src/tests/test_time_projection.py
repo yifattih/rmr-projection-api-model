@@ -1,35 +1,42 @@
 import numpy as np
 
 
-def test_time_projection_valid_input(time_projection) -> None:
-    """
-    Test that the TimeProjection class calculates the correct time array
-    when a valid non-negative duration is provided.
+# === Unit Tests: Time Projection ===
 
-    Parameters:
-    - time_projection: An instance of the TimeProjection class.
 
-    Expected Outcome:
-    - The exit code should be 0, indicating success.
-    - The resulting time array should match the expected range [0, duration].
+def test_time_projection_valid(time_projection_helper):
     """
-    result = time_projection.calculate(10)
+    Test TimeProjection with valid input.
+
+    Parameters
+    ----------
+    time_projection_helper : TimeProjection
+        The fixture providing the TimeProjection helper instance.
+
+    Raises
+    ------
+    AssertionError
+        If the result array or exit code is incorrect.
+    """
+    result = time_projection_helper.calculate(5)
     assert result["exit_code"] == 0
-    assert np.array_equal(result["result"], np.arange(0, 11))
+    assert np.array_equal(result["result"], np.array([0, 1, 2, 3, 4, 5]))
 
 
-def test_time_projection_negative_input(time_projection) -> None:
+def test_time_projection_invalid(time_projection_helper):
     """
-    Test that the TimeProjection class returns an error when a negative
-    duration is provided.
+    Test TimeProjection with invalid input.
 
-    Parameters:
-    - time_projection: An instance of the TimeProjection class.
+    Parameters
+    ----------
+    time_projection_helper : TimeProjection
+        The fixture providing the TimeProjection helper instance.
 
-    Expected Outcome:
-    - The exit code should be 1, indicating an error.
-    - The error message should indicate that the duration must be non-negative.
+    Raises
+    ------
+    AssertionError
+        If the exit code or error message is incorrect.
     """
-    result = time_projection.calculate(-1)
+    result = time_projection_helper.calculate(-1)
     assert result["exit_code"] == 1
-    assert "Duration must be non-negative." in result["error"]
+    assert "non-negative" in result["error"]

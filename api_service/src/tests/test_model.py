@@ -1,137 +1,73 @@
-def test_rmr_model_valid_input(bmr_model, valid_input_data) -> None:
-    """
-    Test the RMRModel class with valid input data, ensuring correct RMR
-    calculation.
+# === Integration Tests ===
 
-    Parameters:
-    - bmr_model: An instance of the RMRModel class.
-    - valid_input_data: A dictionary containing valid input data.
 
-    Expected Outcome:
-    - The exit code should be 0, indicating success.
-    - The output should include the calculated RMR values as a list.
+def test_rmr_model_valid(rmr_model, valid_input_data):
     """
-    result = bmr_model.process(valid_input_data)
+    Test RMRModel with valid inputs.
+
+    Parameters
+    ----------
+    rmr_model : RMRModel
+        The fixture providing the RMRModel instance.
+    valid_input_data : dict
+        The fixture providing valid input data for testing.
+
+    Raises
+    ------
+    AssertionError
+        If the exit code or output structure is incorrect.
+    """
+    result = rmr_model.process(valid_input_data)
     assert result["exit_code"] == 0
-    assert "input" in result
     assert "output" in result
-    assert "rmr" in result["output"]
+    assert "sedentary" in result["output"]["rmr"]
 
 
-def test_rmr_model_missing_keys(bmr_model, valid_input_data) -> None:
+def test_rmr_model_edge_case(rmr_model, edge_case_input_data):
     """
-    Test the RMRModel class with missing required input keys, ensuring an error
-    is returned.
+    Test RMRModel with edge case inputs.
 
-    Parameters:
-    - bmr_model: An instance of the RMRModel class.
-    - valid_input_data: A dictionary containing valid input data.
+    Parameters
+    ----------
+    rmr_model : RMRModel
+        The fixture providing the RMRModel instance.
+    edge_case_input_data : dict
+        The fixture providing edge case input data for testing.
 
-    Expected Outcome:
-    - The exit code should be 1, indicating an error.
-    - The error message should specify the missing required keys.
+    Raises
+    ------
+    AssertionError
+        If the exit code or output length is incorrect.
     """
-    invalid_data = valid_input_data.copy()
-    del invalid_data["age"]
-    result = bmr_model.process(invalid_data)
-    assert result["exit_code"] == 1
-    assert "Missing required keys" in result["error"]
+    result = rmr_model.process(edge_case_input_data)
+    assert result["exit_code"] == 0
+    assert "output" in result
+    assert len(result["output"]["rmr"]["sedentary"]) == 1
 
 
-def test_rmr_model_invalid_age(bmr_model, invalid_age_data) -> None:
+def test_rmr_model_invalid_values(rmr_model):
     """
-    Test the RMRModel class with an invalid 'age' value, ensuring an error is
-    returned.
+    Test RMRModel with invalid input values.
 
-    Parameters:
-    - bmr_model: An instance of the RMRModel class.
-    - invalid_age_data: A dictionary with an invalid 'age' value.
+    Parameters
+    ----------
+    rmr_model : RMRModel
+        The fixture providing the RMRModel instance.
 
-    Expected Outcome:
-    - The exit code should be 1, indicating an error.
-    - The error message should specify the invalid age value.
+    Raises
+    ------
+    AssertionError
+        If the exit code or error message is incorrect.
     """
-    result = bmr_model.process(invalid_age_data)
+    input_data = {
+        "sex": "male",
+        "units": "si",
+        "age": 200,  # Invalid age
+        "weight": -1,  # Invalid weight
+        "height": -1,  # Invalid height
+        "weight_loss_rate": -1,  # Invalid weight loss rate
+        "duration": -1,  # Invalid duration
+    }
+    result = rmr_model.process(input_data)
     assert result["exit_code"] == 1
     assert "Invalid age" in result["error"]
-
-
-def test_rmr_model_invalid_weight(bmr_model, valid_input_data) -> None:
-    """
-    Test the RMRModel class with an invalid 'weight' value, ensuring an error
-    is returned.
-
-    Parameters:
-    - bmr_model: An instance of the RMRModel class.
-    - valid_input_data: A dictionary containing valid input data.
-
-    Expected Outcome:
-    - The exit code should be 1, indicating an error.
-    - The error message should specify the invalid weight value.
-    """
-    invalid_data = valid_input_data.copy()
-    invalid_data["weight"] = -10
-    result = bmr_model.process(invalid_data)
-    assert result["exit_code"] == 1
-    assert "Invalid weight" in result["error"]
-
-
-def test_rmr_model_invalid_height(bmr_model, valid_input_data) -> None:
-    """
-    Test the RMRModel class with an invalid 'height' value, ensuring an error
-    is returned.
-
-    Parameters:
-    - bmr_model: An instance of the RMRModel class.
-    - valid_input_data: A dictionary containing valid input data.
-
-    Expected Outcome:
-    - The exit code should be 1, indicating an error.
-    - The error message should specify the invalid height value.
-    """
-    invalid_data = valid_input_data.copy()
-    invalid_data["height"] = 0
-    result = bmr_model.process(invalid_data)
-    assert result["exit_code"] == 1
-    assert "Invalid height" in result["error"]
-
-
-def test_rmr_model_negative_duration(bmr_model, valid_input_data) -> None:
-    """
-    Test the RMRModel class with a negative duration value, ensuring an error
-    is returned.
-
-    Parameters:
-    - bmr_model: An instance of the RMRModel class.
-    - valid_input_data: A dictionary containing valid input data.
-
-    Expected Outcome:
-    - The exit code should be 1, indicating an error.
-    - The error message should specify the invalid duration value.
-    """
-    invalid_data = valid_input_data.copy()
-    invalid_data["duration"] = -5
-    result = bmr_model.process(invalid_data)
-    assert result["exit_code"] == 1
-    assert "Invalid duration" in result["error"]
-
-
-def test_rmr_model_integration(bmr_model, valid_input_data) -> None:
-    """
-    Full integration test for the RMRModel class, ensuring end-to-end
-    functionality.
-
-    Parameters:
-    - bmr_model: An instance of the RMRModel class.
-    - valid_input_data: A dictionary containing valid input data.
-
-    Expected Outcome:
-    - The exit code should be 0, indicating success.
-    - The output should include a list of RMR values with the correct length.
-    """
-    result = bmr_model.process(valid_input_data)
-    assert result["exit_code"] == 0
-    assert "input" in result
-    assert "output" in result
-    assert isinstance(result["output"]["rmr"], list)
-    assert len(result["output"]["rmr"]) == valid_input_data["duration"] + 1

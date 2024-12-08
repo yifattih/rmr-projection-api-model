@@ -1,54 +1,115 @@
 import pytest
-from ..models.time_projection import TimeProjection  # noqa
-from ..models.equations import Equations  # noqa
-from ..models.model import RMRModel  # noqa
+from ..models.coefficients import MIFFLINSTJEOR
+from ..models.activity_factor import MIFFLINSTJEOR_ACTIVITYFACTOR
+from ..models.time_projection import TimeProjection
+from ..models.equations import Equations
+from ..models.model import RMRModel
+
+# === Fixtures ===
 
 
 @pytest.fixture
-def time_projection() -> TimeProjection:
+def coefficients_fixture():
     """
-    Fixture to provide an instance of the TimeProjection class.
+    Fixture providing MIFFLINSTJEOR coefficients for testing.
+
+    Returns
+    -------
+    dict
+        A dictionary containing coefficients for the Mifflin-St Jeor equations.
+    """
+    return MIFFLINSTJEOR
+
+
+@pytest.fixture
+def activity_factors_fixture():
+    """
+    Fixture providing activity factors for testing.
+
+    Returns
+    -------
+    dict
+        A dictionary containing activity factors based on activity levels.
+    """
+    return MIFFLINSTJEOR_ACTIVITYFACTOR
+
+
+@pytest.fixture
+def time_projection_helper():
+    """
+    Fixture providing an instance of the TimeProjection helper class.
+
+    Returns
+    -------
+    TimeProjection
+        An instance of the TimeProjection helper.
     """
     return TimeProjection()
 
 
 @pytest.fixture
-def equations() -> Equations:
+def equations_helper():
     """
-    Fixture to provide an instance of the Equations class.
+    Fixture providing an instance of the Equations helper class.
+
+    Returns
+    -------
+    Equations
+        An instance of the Equations helper.
     """
     return Equations()
 
 
 @pytest.fixture
-def bmr_model() -> RMRModel:
+def rmr_model():
     """
-    Fixture to provide an instance of the BMRModel class.
+    Fixture providing an instance of the RMRModel class.
+
+    Returns
+    -------
+    RMRModel
+        An instance of the RMRModel class.
     """
     return RMRModel()
 
 
 @pytest.fixture
-def valid_input_data() -> dict:
+def valid_input_data():
     """
-    Fixture to provide valid input data for tests.
+    Fixture providing valid input data for RMRModel.
+
+    Returns
+    -------
+    dict
+        Valid input data with all required fields.
     """
     return {
         "sex": "male",
         "units": "si",
         "age": 30,
         "weight": 70.0,
-        "height": 175.0,
+        "height": 1.75,
         "weight_loss_rate": 0.5,
         "duration": 10,
     }
 
 
 @pytest.fixture
-def invalid_age_data(valid_input_data):
+def edge_case_input_data():
     """
-    Fixture to provide input data with invalid age.
+    Fixture providing edge case input data for RMRModel.
+
+    Returns
+    -------
+    dict
+        Input data containing edge case values for testing.
     """
-    data = valid_input_data.copy()
-    data["age"] = 10  # Invalid age
-    return data
+    return {
+        "sex": "female",
+        "units": "imperial",
+        "age": 20,
+        "weight": 1.0,
+        "height": 1.0,
+        "weight_loss_rate": 0.0,
+        "duration": 0,
+    }

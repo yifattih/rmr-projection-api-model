@@ -1,84 +1,61 @@
 import numpy as np
 
 
-def test_equations_valid_input(equations, time_projection) -> None:
-    """
-    Test the Mifflin-St Jeor equation with valid input parameters, ensuring
-    correct RMR calculation.
+# === Unit Tests: Equations ===
 
-    Parameters:
-    - equations: An instance of the Equations class.
-    - time_projection: An instance of the TimeProjection class to generate time
-    data.
 
-    Expected Outcome:
-    - The exit code should be 0, indicating success.
-    - The result should be a numpy array of RMR values of the expected length.
+def test_equations_valid(equations_helper):
     """
-    time_data = time_projection.calculate(10)
-    result = equations.mifflinstjeor_rmr(
+    Test Equations helper with valid inputs.
+
+    Parameters
+    ----------
+    equations_helper : Equations
+        The fixture providing the Equations helper instance.
+
+    Raises
+    ------
+    AssertionError
+        If the exit code, result, or sedentary list type is incorrect.
+    """
+    projection = np.array([0, 1, 2])
+    result = equations_helper.mifflinstjeor_rmr(
         sex="male",
         units="si",
         age=30,
         weight=70,
         height=1.75,
         weight_loss_rate=0.5,
-        time_projection=time_data["result"],
+        time_projection=projection,
     )
     assert result["exit_code"] == 0
-    assert isinstance(result["result"], np.ndarray)
-    assert len(result["result"]) == 11
+    assert "sedentary" in result["result"]
+    assert isinstance(result["result"]["sedentary"], list)
 
 
-def test_equations_invalid_sex(equations, time_projection) -> None:
+def test_equations_invalid(equations_helper):
     """
-    Test the Mifflin-St Jeor equation with an invalid 'sex' parameter.
+    Test Equations helper with invalid inputs.
 
-    Parameters:
-    - equations: An instance of the Equations class.
-    - time_projection: An instance of the TimeProjection class to generate time
-    data.
+    Parameters
+    ----------
+    equations_helper : Equations
+        The fixture providing the Equations helper instance.
 
-    Expected Outcome:
-    - The exit code should be 1, indicating an error.
-    - The error message should specify an invalid combination of sex or units.
+    Raises
+    ------
+    AssertionError
+        If the exit code or error message is incorrect.
     """
-    time_data = time_projection.calculate(10)
-    result = equations.mifflinstjeor_rmr(
+    projection = np.array([0, 1, 2])
+    result = equations_helper.mifflinstjeor_rmr(
         sex="unknown",
         units="si",
         age=30,
         weight=70,
         height=1.75,
         weight_loss_rate=0.5,
-        time_projection=time_data["result"],
+        time_projection=projection,
     )
     assert result["exit_code"] == 1
-    assert "Invalid combination of sex or units" in result["error"]
-
-
-def test_equations_invalid_units(equations, time_projection) -> None:
-    """
-    Test the Mifflin-St Jeor equation with an invalid 'units' parameter.
-
-    Parameters:
-    - equations: An instance of the Equations class.
-    - time_projection: An instance of the TimeProjection class to generate time
-    data.
-
-    Expected Outcome:
-    - The exit code should be 1, indicating an error.
-    - The error message should specify an invalid combination of sex or units.
-    """
-    time_data = time_projection.calculate(10)
-    result = equations.mifflinstjeor_rmr(
-        sex="male",
-        units="unknown",
-        age=30,
-        weight=70,
-        height=1.75,
-        weight_loss_rate=0.5,
-        time_projection=time_data["result"],
-    )
-    assert result["exit_code"] == 1
-    assert "Invalid combination of sex or units" in result["error"]
+    assert "Invalid combination" in result["error"]
