@@ -64,7 +64,7 @@ class Equations:
             height_coeff = coeffs["height"]
             age_coeff = coeffs["age"]
             bias = coeffs["bias"]
-            
+
             activity_factor = MIFFLINSTJEOR_ACTIVITYFACTOR[sex]
             sedentary_factor = activity_factor["sedentary"]
             low_active_factor = activity_factor["low_active"]
@@ -83,15 +83,16 @@ class Equations:
             rmr_active = rmr * active_factor
             rmr_very_active = rmr * very_active_factor
 
-            rmr = {"sedentary": rmr_sedentary.tolist(),
-                   "low_active": rmr_low_active.tolist(),
-                   "active": rmr_active.tolist(),
-                   "very_active": rmr_very_active.tolist()}
+            rmr = {
+                "sedentary": rmr_sedentary.tolist(),
+                "low_active": rmr_low_active.tolist(),
+                "active": rmr_active.tolist(),
+                "very_active": rmr_very_active.tolist(),
+            }
             return {"result": rmr, "exit_code": 0}
         except KeyError as e:
             return {
-                "error": f"Invalid combination of sex and units: sex = {sex}, \
-                units = {units}",
+                "error": f"Invalid combination of sex and units: sex = {e}",
                 "exit_code": 1,
             }
         except Exception as e:

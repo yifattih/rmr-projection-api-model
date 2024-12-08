@@ -6,8 +6,7 @@ class RMRInput(BaseModel):
     sex: str = Field(
         description="The sex of the individual ('male' or 'female')."
     )
-    units: str = Field(
-        description="The units system ('si' or 'imperial').")
+    units: str = Field(description="The units system ('si' or 'imperial').")
     age: int = Field(
         gt=19,
         le=150,

@@ -45,12 +45,12 @@ MIFFLINSTJEOR_ACTIVITYFACTOR = {
         "sedentary": 1.00,
         "low_active": 1.11,
         "active": 1.25,
-        "very_active": 1.48
-        },
+        "very_active": 1.48,
+    },
     "female": {
         "sedentary": 1.00,
         "low_active": 1.12,
         "active": 1.27,
-        "very_active": 1.45
-        },
+        "very_active": 1.45,
+    },
 }

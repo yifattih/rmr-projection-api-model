@@ -151,9 +151,10 @@ class RMRModel:
             # Return success response
             return {
                 "input": input_data,
-                "output": {"rmr": rmr_result["result"],
-                           "time_projection": time_projection.tolist()
-                           },
+                "output": {
+                    "rmr": rmr_result["result"],
+                    "time_projection": time_projection.tolist(),
+                },
                 "exit_code": 0,
             }
         except Exception as e:
