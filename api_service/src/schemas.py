@@ -29,4 +29,4 @@ class RMRInput(BaseModel):
 
 class RMROutput(BaseModel):
     input: Dict[str, str | int | float]
-    output: Dict[str, List[float]]
+    output: Dict[str, Dict[str, List[float]] | List[int]]

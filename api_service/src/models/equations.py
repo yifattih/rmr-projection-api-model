@@ -1,5 +1,6 @@
 import numpy as np
 from .coefficients import MIFFLINSTJEOR
+from .activity_factor import MIFFLINSTJEOR_ACTIVITYFACTOR
 
 
 class Equations:
@@ -63,6 +64,12 @@ class Equations:
             height_coeff = coeffs["height"]
             age_coeff = coeffs["age"]
             bias = coeffs["bias"]
+            
+            activity_factor = MIFFLINSTJEOR_ACTIVITYFACTOR[sex]
+            sedentary_factor = activity_factor["sedentary"]
+            low_active_factor = activity_factor["low_active"]
+            active_factor = activity_factor["active"]
+            very_active_factor = activity_factor["very_active"]
 
             rmr = (
                 weight_coeff * (weight - weight_loss_rate * time_projection)
@@ -70,10 +77,21 @@ class Equations:
                 + age_coeff * age
                 + bias
             )
+
+            rmr_sedentary = rmr * sedentary_factor
+            rmr_low_active = rmr * low_active_factor
+            rmr_active = rmr * active_factor
+            rmr_very_active = rmr * very_active_factor
+
+            rmr = {"sedentary": rmr_sedentary.tolist(),
+                   "low_active": rmr_low_active.tolist(),
+                   "active": rmr_active.tolist(),
+                   "very_active": rmr_very_active.tolist()}
             return {"result": rmr, "exit_code": 0}
         except KeyError as e:
             return {
-                "error": f"Invalid combination of sex or units: {e}",
+                "error": f"Invalid combination of sex and units: sex = {sex}, \
+                units = {units}",
                 "exit_code": 1,
             }
         except Exception as e:
