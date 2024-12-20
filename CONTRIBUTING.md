@@ -1,4 +1,4 @@
-# Contributing to the BMR Calculator Web App
+# Contributing to the RMR Projection Web App
 
 Follow these guidelines to make your contributions seamless and effective.
 
@@ -27,7 +27,6 @@ Contributors should create their branches off the **`dev`** branch and submit Pu
 - Ensure Docker engine is running
 
 ## Development Workflow
-
 1. **Fork and Clone the Repository**
     - Fork the repository to your GitHub account.
     - Open the project repo locally following the Devcontainers extension to **clone repository in container volume**
@@ -39,7 +38,6 @@ Contributors should create their branches off the **`dev`** branch and submit Pu
         git checkout -b feat/<your-feature-name> dev
         
         ```
-        
 3. **Write and Test Code**
     - Follow the project’s code style and standards (e.g., flake8, black).
     - Add or update tests if applicable.
@@ -54,15 +52,14 @@ Contributors should create their branches off the **`dev`** branch and submit Pu
         
         [optional footer]
         ```
-        
     - Examples
         
         ```
         feat(ui): improve input form styling
-        fix(backend): handle edge case for BMR calculation
+        fix(backend): handle edge case for RMR calculation
         
         ```
-        
+    For more details: [![semantic-release: angular](https://img.shields.io/badge/semantic--release-angular-e10079?logo=semantic-release)](https://github.com/semantic-release/semantic-release)
 5. **Push and Create a Pull Request**
     - Push your branch to your fork
         
@@ -70,12 +67,10 @@ Contributors should create their branches off the **`dev`** branch and submit Pu
         git push origin feat/your-feature-name
         
         ```
-        
     - Open a PR to the **`dev`** branch of the original repository
     - Fill out the PR template with detailed information of changes or new implementations
 
 ## Pull Request Guidelines
-
 - Ensure all commits pass CI checks.
 - Rebase your branch onto `dev` to avoid merge conflicts:
     
@@ -84,7 +79,6 @@ Contributors should create their branches off the **`dev`** branch and submit Pu
     git rebase upstream/dev
     
     ```
-    
 - Squash commits if needed to maintain a clean commit history.
 - Add detailed descriptions in your PRs, including:
     - What problem does this solve?
@@ -94,14 +88,12 @@ Contributors should create their branches off the **`dev`** branch and submit Pu
 ## Testing
 
 This project uses `pytest` for backend testing and GitHub Actions for CI. Run tests locally before submitting your PR:
-
 - **Run Tests**
     
     ```bash
     pytest
     
     ```
-    
 - **Check Linting and apply formmating**
     
     ```bash
