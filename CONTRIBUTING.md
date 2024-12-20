@@ -43,7 +43,7 @@ Contributors should create their branches off the **`dev`** branch and submit Pu
     - Add or update tests if applicable.
     - Test your changes locally.
 4. **Commit Messages**
-    - Use the [commit convention](COMMIT_CONVENTION.md)
+    - Use the [commit convention](COMMIT_CONVENTION.md) [![semantic-release: angular](https://img.shields.io/badge/semantic--release-angular-e10079?logo=semantic-release)](https://github.com/semantic-release/semantic-release)
         
         ```bash
         <type>(<scope>): <description>
@@ -59,7 +59,6 @@ Contributors should create their branches off the **`dev`** branch and submit Pu
         fix(backend): handle edge case for RMR calculation
         
         ```
-    For more details: [![semantic-release: angular](https://img.shields.io/badge/semantic--release-angular-e10079?logo=semantic-release)](https://github.com/semantic-release/semantic-release)
 5. **Push and Create a Pull Request**
     - Push your branch to your fork
         

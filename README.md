@@ -119,4 +119,4 @@ This project is licensed under the MIT License. See the [LICENSE](https://github
 [![Continuous Integration](https://github.com/yifattih/rmr-projection-api-model/actions/workflows/ci_release.yml/badge.svg)](https://github.com/yifattih/rmr-projection-api-model/actions/workflows/ci_release.yml)
 [![Deployment](https://github.com/yifattih/rmr-projection-iac/actions/workflows/deploy.yaml/badge.svg)](https://github.com/yifattih/rmr-projection-iac/actions/workflows/deploy.yaml)
 [![Codecov](https://codecov.io/gh/yifattih/rmr-projection-api-model/graph/badge.svg?token=7CK07XM5W4)](https://codecov.io/gh/yifattih/rmr-projection-api-model)
-[![SonarQube Cloud](https://sonarcloud.io/images/project_badges/sonarcloud-highlight.svg)](https://sonarcloud.io/summary/new_code?id=yifattih_bmr_calculator)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=yifattih_bmr_calculator&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=yifattih_bmr_calculator)
