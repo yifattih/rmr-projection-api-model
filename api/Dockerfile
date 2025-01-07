@@ -11,16 +11,16 @@ RUN apt-get autoremove \
 #     && useradd -r -g yifattih -m -d /home/yifattih -s /bin/bash yifattih
 
 # Set the working directory for the app
-WORKDIR /api_service
+WORKDIR /api
 
 # Set ownership permissions to working directory
-RUN chown -R yifattih:yifattih /api_service
+RUN chown -R yifattih:yifattih /api
 
 # Change user
 USER yifattih 
 
 # Copy app-specific requirements
-COPY requirements.txt /api_service/
+COPY requirements.txt /api/
 
 # Update pip and and install requirements
 RUN  pip install --user --upgrade pip \
@@ -30,7 +30,7 @@ RUN  pip install --user --upgrade pip \
 ENV PATH="/home/yifattih/.local/bin:$PATH"
 
 # Copy the app code into the container
-COPY src/ /api_service/src/
+COPY src/ /api/src/
 
 # Copy the app code into the container
 CMD ["uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "3"]

@@ -29,7 +29,7 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install -r api_service/requirements.txt # api dependencies
+          pip install -r api/requirements.txt # api dependencies
           pip install pytest pytest-cov flake8 black coverage # dev/testing dependencies
 
       # Step 4: Run code formatting check with Black
