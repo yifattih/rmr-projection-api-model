@@ -32,5 +32,7 @@ ENV PATH="/home/yifattih/.local/bin:$PATH"
 # Copy the app code into the container
 COPY src/ /api/src/
 
+EXPOSE 8000
+
 # Copy the app code into the container
 CMD ["uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "3"]
