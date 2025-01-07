@@ -23,7 +23,10 @@
 		}
 	},
 	
-	"postStartCommand": "bash /workspaces/rmr-projection-api-model/.devcontainer/ownerships.sh"
+	"postStartCommand": "bash /workspaces/rmr-projection-api-model/.devcontainer/ownerships.sh",
+	"features": {
+		"ghcr.io/devcontainers/features/docker-outside-of-docker:1": {}
+	}
 
 
 	// Configure tool-specific properties.
