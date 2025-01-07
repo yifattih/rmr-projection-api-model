@@ -1,6 +1,6 @@
 services:
   devcontainer:
-    container_name: development-service
+    container_name: development-env
     build: 
       context: .devcontainer
       dockerfile: Dockerfile
@@ -10,8 +10,8 @@ services:
     ports:
       - "8000:8000"
 
-  api-service:
-    container_name: api-service
+  api:
+    container_name: api
     build:
       context: api
       dockerfile: Dockerfile
