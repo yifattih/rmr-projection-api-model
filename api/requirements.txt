@@ -1,0 +1,5 @@
+numpy
+fastapi
+uvicorn
+pydantic
+prometheus_fastapi_instrumentator

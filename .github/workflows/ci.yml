@@ -13,7 +13,7 @@ jobs:
   build-test:
     name: Test, and Report
     runs-on: ubuntu-latest
-    if: "! contains(github.event.head_commit.message, '[skip ci]')"
+
     steps:
       # Step 1: Check out the code from the repository
       - name: Check out repository
@@ -29,7 +29,7 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install -r api_service/requirements.txt # api dependencies
+          pip install -r api/requirements.txt # api dependencies
           pip install pytest pytest-cov flake8 black coverage # dev/testing dependencies
 
       # Step 4: Run code formatting check with Black
