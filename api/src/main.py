@@ -26,3 +26,7 @@ async def root():
             "Welcome to the RMR API. Use /docs for the API" + " documentation."
         )
     }
+
+@app.get("/health", tags=["health"])
+def health():
+    return "Healthy"
