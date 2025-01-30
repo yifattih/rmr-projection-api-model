@@ -7,16 +7,6 @@ import numpy as np
 def test_equations_valid(equations_helper):
     """
     Test Equations helper with valid inputs.
-
-    Parameters
-    ----------
-    equations_helper : Equations
-        The fixture providing the Equations helper instance.
-
-    Raises
-    ------
-    AssertionError
-        If the exit code, result, or sedentary list type is incorrect.
     """
     projection = np.array([0, 1, 2])
     result = equations_helper.mifflinstjeor_rmr(
@@ -36,16 +26,6 @@ def test_equations_valid(equations_helper):
 def test_equations_invalid(equations_helper):
     """
     Test Equations helper with invalid inputs.
-
-    Parameters
-    ----------
-    equations_helper : Equations
-        The fixture providing the Equations helper instance.
-
-    Raises
-    ------
-    AssertionError
-        If the exit code or error message is incorrect.
     """
     projection = np.array([0, 1, 2])
     result = equations_helper.mifflinstjeor_rmr(
