@@ -107,6 +107,16 @@ branch: ## Show current branches
     @ echo -e "\e[32m[=================] \e[0m              \e[32m[=================] \e[0m"
     @ echo
 
+branch-new: ## Create new local branch
+##  |Usages:
+##  |   $ make branch-new
+##  |   $ make branch-new name=<branch_name>
+    @ echo
+    @ echo -e "\e[32m[=================] \e[0m CREATING NEW BRANCH \e[32m[=================] \e[0m"
+    @ if [ -z "$(name)" ]; then read -p "Enter branch name: " branch && git checkout -b $$branch; else git checkout -b $$name; fi
+    @ echo -e "\e[32m[=================] \e[0m                     \e[32m[=================] \e[0m"
+    @ echo
+
 branch-push: ## Push current local branch to remote
 ##  |Usage:
 ##  |   $ make branch-push
@@ -116,14 +126,22 @@ branch-push: ## Push current local branch to remote
     @ echo -e "\e[32m[=================] \e[0m                          \e[32m[=================] \e[0m"
     @ echo
 
-branch-new: ## Create new local branch
+branch-delete: ## Delete local branch
 ##  |Usages:
-##  |   $ make branch-new
-##  |   $ make branch-new name=<branch_name>
+##  |   $ make branch-delete name=<branch_name>
     @ echo
-    @ echo -e "\e[32m[=================] \e[0m CREATING NEW BRANCH \e[32m[=================] \e[0m"
-    @ if [ -z "$(name)" ]; then read -p "Enter branch name: " branch && git checkout -b $$branch; else git checkout -b $$name; fi
-    @ echo -e "\e[32m[=================] \e[0m                     \e[32m[=================] \e[0m"
+    @ echo -e "\e[32m[=================] \e[0m DELETING BRANCH \e[32m[=================] \e[0m"
+    @ if [ -z "$(name)" ]; then read -p "Enter branch name: " branch && git branch -d $$branch; else git branch -d $$name; fi
+    @ echo -e "\e[32m[=================] \e[0m                 \e[32m[=================] \e[0m"
+    @ echo
+
+branch-wipe: ## Delete remote branch
+##  |Usages:
+##  |   $ make branch-remote-delete name=<branch_name>
+    @ echo
+    @ echo -e "\e[32m[=================] \e[0m DELETING LOCAL/REMOTE BRANCH \e[32m[=================] \e[0m"
+    @ if [ -z "$(name)" ]; then read -p "Enter branch name: " branch && git push --set-upstream origin --delete $$branch && git branch --delete $$branch; else git push --set-upstream origin --delete $$name && git branch --delete $$name; fi
+    @ echo -e "\e[32m[=================] \e[0m                              \e[32m[=================] \e[0m"
     @ echo
 
 log: ## Show custom git log
@@ -136,6 +154,15 @@ log: ## Show custom git log
     # @ git log --pretty=format:"%h - %an, %ar : %s"
     @ echo
     @ echo -e "\e[32m[=================] \e[0m                          \e[32m[=================] \e[0m"
+    @ echo
+
+push: ## Push all commited changes to remote
+##  |Usage:
+##  |   $ make push
+    @ echo
+    @ echo -e "\e[32m[=================] \e[0m PUSHING TO REMOTE \e[32m[=================] \e[0m"
+    @ git push --progress --verbose
+    @ echo -e "\e[32m[=================] \e[0m                  \e[32m[=================] \e[0m"
     @ echo
 
 # #-----------------------------------------------------------------------------#
