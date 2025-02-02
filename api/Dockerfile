@@ -28,6 +28,9 @@ RUN  pip install --user --upgrade pip \
 # Add the user's local bin directory to PATH
 ENV PATH="/home/yifattih/.local/bin:$PATH"
 
+# Add variable for Procfile execution via honcho
+ENV ENV="prod"
+
 # Copy the app code into the container
 COPY src/ /api/src/
 
