@@ -2,7 +2,7 @@ from pydantic import BaseModel, Field
 from typing import Dict, List
 
 
-class RMRInput(BaseModel):
+class InputData(BaseModel):
     sex: str = Field(
         description="The sex of the individual ('male' or 'female')."
     )
@@ -25,7 +25,14 @@ class RMRInput(BaseModel):
         ge=0, description="Duration for the time projection (>= 0)."
     )
 
+class OutputData(BaseModel):
+    rmr: Dict[str, list] = Field(
+        description="Resting Metabolic Rate (RMR) over the time projection."
+    )
+    time_projection: List[int] = Field(
+        description="Time projection in weeks."
+    )
 
 class RMROutput(BaseModel):
-    input: Dict[str, str | int | float]
-    output: Dict[str, Dict[str, List[float]] | List[int]]
+    input: InputData
+    output: OutputData
