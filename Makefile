@@ -77,7 +77,7 @@ log: ## Show custom git log
             && echo \
             && exit 0;
         fi;
-        git --no-pager log -n "$(ARG1)" --abbrev-commit --format=format:"%s-- " | sed "s/-- /\n/g" \
+        git --no-pager log -n "$$input" --abbrev-commit --format=format:"%s-- " | sed "s/-- /\n/g" \
         | sed -r \
         -e 's/([^(:]*)(\([^)]*\))(:)(.*)/ \x1b[30m\1\x1b[0m\x1b[36m\2\x1b[0m\x1b[37m\3\x1b[0m\x1b[33m\4\x1b[0m/g' \
         | tac; \
