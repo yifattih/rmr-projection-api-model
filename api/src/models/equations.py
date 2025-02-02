@@ -92,7 +92,7 @@ class Equations:
             return {"result": rmr, "exit_code": 0}
         except KeyError as e:
             return {
-                "error": f"Invalid combination of sex and units: sex = {e}",
+                "error": f"Invalid combination of sex and units: {e.args[0]}",
                 "exit_code": 1,
             }
         except Exception as e:
