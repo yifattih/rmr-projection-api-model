@@ -253,10 +253,14 @@ branch-wipe: ## Delete local/remote branch
 
 run: ## Run the service
 ##  |Usage:
-##  |   $ make run
+##  |   $ make run <str: dev for development (default) | prod for production>
 ##
-    @ $(info Starting service...)
-    export ENV="dev"
+    @ $(call log,"STARTING SERVICE")
+    @ if [ -z "$(ARG1)" ]; then \
+        export ENV="dev";
+    else
+        export ENV="$(ARG1)";
+    fi;
     @ honcho start
 
 #-----------------------------------------------------------------------------#
