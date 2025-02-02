@@ -12,11 +12,8 @@ app = FastAPI(
     version="1.0.0",
 )
 
-# Instrumentation to expose /metrics for Prometheus
+# Instrumentation to expose metrics endpoint for Prometheus
 Instrumentator().instrument(app).expose(app)
-
-# Include the RMR routes
-app.include_router(rmr.router)
 
 
 @app.get("/", tags=["Root"])
@@ -26,3 +23,6 @@ async def root():
             "Welcome to the RMR API. Use /docs for the API" + " documentation."
         )
     }
+
+# Include the RMR routes
+app.include_router(rmr.router)
