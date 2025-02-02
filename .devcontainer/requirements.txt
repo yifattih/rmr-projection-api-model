@@ -20,6 +20,7 @@ pytest-pspec==0.0.4
 
 # Code quality
 flake8==7.1.1
+flake8-pyproject=1.2.3
 black==25.1.0
 
 # Code Coverage
