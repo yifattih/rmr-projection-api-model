@@ -116,22 +116,25 @@ commit-file: ## Commit specific file
 ##  |   $ make commit-file <str: file | optional> <str: message | optional>
 ##
     @ echo
-    $(call log, COMMITTING A SINGLE FILE)
+    $(call log,"COMMITTING A SINGLE FILE")
     @ if [ -z "$(file)" ]; then \
         git diff --color --stat=$($(tput cols) - 3) HEAD | sed '$d; s/^ //' | sed 's/^/ /'; \
         echo; \
-        $(call log_prompt, Enter file name) && file="$$input"; \
+        $(call log_prompt,"Enter file name") && file="$$input"; \
+        git add "$$file" 2>/dev/null || { $(call log_error, File "$$file" do not exist!) && echo && exit 0; }; \
         if [ -z "$(message)" ]; then \
             echo; \
-            echo " Lets construct the commit message!"; \
+            echo " Lets construct the commit message using the AngularJS commit convention!"; \
             $(call log_prompt,Type) && type="$$input"; \
+            if [ -z $$type ]; then { $(call log_error, "Field can't be empty!") && echo && exit 0; }; fi; \
             $(call log_prompt,Scope) && scope="$$input"; \
+            if [ -z $$scope ]; then { $(call log_error, "Field can't be empty!") && echo && exit 0; }; fi; \
             $(call log_prompt,Imperative Description) && description="$$input"; \
+            if [ -z $$description ]; then { $(call log_error, "Field can't be empty!") && echo && exit 0; }; fi; \
             message="$$type($$scope): $$description"; \
-            echo " $$message"; \
         fi; \
-        git add "$$file" 2>/dev/null || { $(call log_error, File "$$file" do not exist!) && echo && exit 0; }; \
-        git commit -m "$$message"; \
+        git commit -m "$$message" > /dev/null; \
+        $(call log_keyvalue, Commit, $$message); \
     fi;
     # elif [-z "$(message)"]; then
     #     $(call log_prompt, Enter message); \
