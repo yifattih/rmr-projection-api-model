@@ -126,15 +126,16 @@ commit-file: ## Commit specific file
             echo; \
             echo " Lets construct the commit message using the AngularJS commit convention!"; \
             $(call log_prompt,Type) && type="$$input"; \
-            if [ -z $$type ]; then { $(call log_error, "Field can't be empty!") && echo && exit 0; }; fi; \
+            if [ -z "$$type" ]; then { $(call log_error, "Field can't be empty!") && echo && exit 0; }; fi; \
             $(call log_prompt,Scope) && scope="$$input"; \
-            if [ -z $$scope ]; then { $(call log_error, "Field can't be empty!") && echo && exit 0; }; fi; \
+            if [ -z "$$scope" ]; then { $(call log_error, "Field can't be empty!") && echo && exit 0; }; fi; \
             $(call log_prompt,Imperative Description) && description="$$input"; \
-            if [ -z $$description ]; then { $(call log_error, "Field can't be empty!") && echo && exit 0; }; fi; \
+            if [ -z "$$description" ]; then { $(call log_error, "Field can't be empty!") && echo && exit 0; }; fi; \
             message="$$type($$scope): $$description"; \
         fi; \
-        git commit -m "$$message" > /dev/null; \
-        $(call log_keyvalue, Commit, $$message); \
+        git commit -m "$$message" > /dev/null 2>&1; \
+
+        $(call log_keyvalue,"Commit","$$message"); \
     fi;
     # elif [-z "$(message)"]; then
     #     $(call log_prompt, Enter message); \
