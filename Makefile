@@ -1,12 +1,22 @@
 ## ============================================================================
-##            Source: https://github.com/thevops/makefile-automation
-##            Additions by: @yifattih
-##            Description: Makefile Targets for common taks automation
+##          Inspired on https://github.com/thevops/makefile-automation
+##          Additions by: @yifattih
+##          Description: Makefile for common DevOps and software
+##                       development taks automation
 ## ============================================================================
+
+#  Check if the version of Make is 4.3
+NEED_VERSION := 4.3
+$(if $(filter $(NEED_VERSION),$(MAKE_VERSION)),, \
+ $(error error You must be running make version $(NEED_VERSION).))
+
+include makefiles/colors.mk
+include makefiles/messenger.mk
+
 
 # By default Makefile use tabs in indentation. This command allow to use SPACES
 # .RECIPEPREFIX +=                      # Make Version < 4.3
-.RECIPEPREFIX := $(.RECIPEPREFIX)       # Make Version >= 4.3
+.RECIPEPREFIX := $(.RECIPEPREFIX)       # Make Version = 4.3
 
 # By default every line in every task in ran in separate shell.
 .ONESHELL:                              # Run all commands in a single shell
@@ -20,9 +30,13 @@ SHELL:=/bin/bash
 # Optionally load env vars from .env
 include .env
 
-args=$(filter-out $@,$(MAKECMDGOALS))
+ARGS = $(filter-out $@,$(MAKECMDGOALS))
+ARG1 := $(word 2, $(ARGS))
+ARG2 := $(word 3, $(ARGS))
+ARG3 := $(word 4, $(ARGS))
+ARG4 := $(word 5, $(ARGS))
+ARG5 := $(word 6, $(ARGS))
 
-LOGLNES ?= 5
 
 #-----------------------------------------------------------------------------#
 ##
@@ -31,10 +45,57 @@ LOGLNES ?= 5
 ##-----------------------------------------------------------------------------
 ##
 #-----------------------------------------------------------------------------#
+.PHONY: status
+status: ## Show a git status glimpse
+##  |Usage:
+##  |   $ make status
+##
+    @ echo
+    $(call log, FILES CHANGES)
+    @ git diff --color --stat=$($(tput cols) - 3) HEAD | sed '$d; s/^ //' | sed 's/^/ /'
+    @ echo
+    $(call log, SHORT SUMMARY)
+    $(call log_keyvalue, Modified, $(shell git status -s | grep "^.*M" | wc -l))
+    $(call log_keyvalue, Staged, $(shell git status -s | grep -e "^A.*" -e "^M.*" | grep -v "^.*D" | wc -l))
+    $(call log_keyvalue, Deleted, $(shell git status -s | grep "^.*D" | wc -l))
+    $(call log_keyvalue, Untracked, $(shell git status -s | grep "??" | wc -l))
+    @ echo
+
+log: ## Show custom git log
+##  |Usage:
+##  |   $ make log <int: number of entries | optional>
+##
+    @ echo
+    $(call log, COMMITS)
+    @ # Function to check if the input is an integer
+    @ # Script
+    if [ -z "$(ARG1)" ]; then \
+        $(call log_prompt,"How many entries?"); \
+        if ! echo "$$input" | grep -qE '^[0-9]+$$'; then \
+            $(call log_error,"Number of log entries must be an integer!") \
+            && echo \
+            && exit 0;
+        fi
+        git --no-pager log -n "$$input" --abbrev-commit --format=format:'%s' \
+        | sed -r \
+        -e 's/([^(:]*)(\([^)]*\))(:)(.*)/ \x1b[30m\1\x1b[0m\x1b[36m\2\x1b[0m\x1b[37m\3\x1b[0m\x1b[33m\4\x1b[0m/g' \
+        | tac; \
+    elif ! echo "$(ARG1)" | grep -qE '^[0-9]+$$'; then \
+        $(call log_error,"Number of log entries must be an integer!") \
+        && echo \
+		&& exit 0; \
+    else \
+        git --no-pager log -n "$(ARG1)" --abbrev-commit --format=format:'%s' \
+        | sed -r \
+        -e 's/([^(:]*)(\([^)]*\))(:)(.*)/ \x1b[30m\1\x1b[0m\x1b[36m\2\x1b[0m\x1b[37m\3\x1b[0m\x1b[33m\4\x1b[0m/g' \
+        | tac; \
+    fi
+    @ echo
 
 commit: ## Commit all changes
 ##  |Usage:
 ##  |   $ make commit
+##
     @ echo
     @ echo -e "\e[32m[=================] \e[0m COMMITING ALL CHANGES \e[32m[=================] \e[0m"
     @ git add .
@@ -49,111 +110,52 @@ commit: ## Commit all changes
     @ echo -e "\e[32m[=================] \e[0m                       \e[32m[=================] \e[0m"
     @ echo
 
+.PHONY: commit-file
+commit-file: ## Commit specific file
+##  |Usage:
+##  |   $ make commit-file <str: file | optional> <str: message | optional>
+##
+    @ echo
+    $(call log, COMMITTING A SINGLE FILE)
+    @ if [ -z "$(file)" ]; then \
+        git diff --color --stat=$($(tput cols) - 3) HEAD | sed '$d; s/^ //' | sed 's/^/ /'; \
+        echo; \
+        $(call log_prompt, Enter file name) && file="$$input"; \
+        if [ -z "$(message)" ]; then \
+            echo; \
+            echo " Lets construct the commit message!"; \
+            $(call log_prompt,Type) && type="$$input"; \
+            $(call log_prompt,Scope) && scope="$$input"; \
+            $(call log_prompt,Imperative Description) && description="$$input"; \
+            message="$$type($$scope): $$description"; \
+            echo " $$message"; \
+        fi; \
+        git add "$$file" 2>/dev/null || { $(call log_error, File "$$file" do not exist!) && echo && exit 0; }; \
+        git commit -m "$$message"; \
+    fi;
+    # elif [-z "$(message)"]; then
+    #     $(call log_prompt, Enter message); \
+    #     git commit -m "$$input"; \
+    # else \
+    #     git commit -m "$(message);" \
+    # fi
+    # else \
+    #     git add "$(file)" 2>/dev/null || $(call log_error, File "$(file)" do not exist!) \
+    #     && echo \
+    #     && exit 0;
+    # fi
+    @ echo
+
+.PHONY: commit-delete
 commit-delete: ## Delete last commit message
 ##  |Usage:
 ##  |   $ make commit-delete
+##
     @ echo
-    @ echo -e "\e[32m[=================] \e[0m DELETING LAST COMMIT MESSAGE \e[32m[=================] \e[0m"
+    $(call log, "DELETE COMMIT")
+    hash=$(shell git rev-parse --short HEAD)
+    $(call log_keyvalue, Hash, $$hash)
     @ git reset --soft HEAD~1
-    @ echo -e "\e[32m[=================] \e[0m                              \e[32m[=================] \e[0m"
-    @ echo
-
-commit-file: ## Commit specific file
-##  |Usages:
-##  |   $ make commit-file
-##  |   $ make commit-file file=<file_name>
-##  |   $ make commit-file message=<commit_message>
-##  |   $ make commit-file file=<file_name> message=<commit_message>
-    @ echo
-    @ echo -e "\e[32m[=================] \e[0m COMMITING SPECIFIC FILE \e[32m[=================] \e[0m"
-    @ if [ -z "$(file)" ]; then make -s status-short && read -p "Enter file name: " file && git add $$file; else git add $$file; fi
-    @ if [ -z "$(message)" ]; then read -p "Enter commit message: " message && git commit -m "$$message"; else git commit -m "$$message"; fi
-    @ echo -e "\e[32m[=================] \e[0m                         \e[32m[=================] \e[0m"
-    @ echo
-
-status: ## Show custom git status glimpse
-##  |Usage:
-##  |   $ make status
-    @ echo
-    @ echo -e "\e[32m[=================] \e[0m GIT SHORT STATUS \e[32m[=================] \e[0m"
-    @ git diff --color --stat=$(($(tput cols) - 3)) HEAD | sed '$d; s/^ //'
-    @ echo
-    @ echo "---------- Summary ----------"
-    @ echo "Modified:   $(shell git status -s | grep "^.*M" | wc -l)"
-    @ echo "Staged:     $(shell git status -s | grep -e "^A.*" -e "^M.*" | grep -v "^.*D" | wc -l)"
-    @ echo "Deleted:    $(shell git status -s | grep "^.*D" | wc -l)"
-    @ echo "Untracked:  $(shell git status -s | grep "??" | wc -l)"
-    # git status -s | grep " M" | wc -l
-    # git status -s | grep "^M" | wc -l
-    @ echo -e "\e[32m[=================] \e[0m                  \e[32m[=================] \e[0m"
-    @ echo
-
-branch: ## Show current branches
-##  |Usage:
-##  |   $ make branch
-    @ echo
-    @ echo -e "\e[32m[=================] \e[0m GIT BRANCHES \e[32m[=================] \e[0m"
-    @ echo "Current Branch"
-    @ echo "--------------------"
-    @ git branch | grep "\*" | sed 's/\*//g' | sed 's/ //g'
-    @ echo
-    @ echo "Local Branches"
-    @ echo "--------------------"
-    @ git branch | sed 's/\*//g' | sed 's/ //g'
-    @ echo
-    @ echo "Remote Branches"
-    @ echo "--------------------"
-    @ git branch -a | grep "remotes" | sed 's/\// /g' | sed 's/.* //'
-    @ echo -e "\e[32m[=================] \e[0m              \e[32m[=================] \e[0m"
-    @ echo
-
-branch-new: ## Create new local branch
-##  |Usages:
-##  |   $ make branch-new
-##  |   $ make branch-new name=<branch_name>
-    @ echo
-    @ echo -e "\e[32m[=================] \e[0m CREATING NEW BRANCH \e[32m[=================] \e[0m"
-    @ if [ -z "$(name)" ]; then read -p "Enter branch name: " branch && git checkout -b $$branch; else git checkout -b $$name; fi
-    @ echo -e "\e[32m[=================] \e[0m                     \e[32m[=================] \e[0m"
-    @ echo
-
-branch-push: ## Push current local branch to remote
-##  |Usage:
-##  |   $ make branch-push
-    @ echo
-    @ echo -e "\e[32m[=================] \e[0m PUSHING BRANCH TO REMOTE \e[32m[=================] \e[0m"
-    @ git push --set-upstream origin $(shell git rev-parse --abbrev-ref HEAD)
-    @ echo -e "\e[32m[=================] \e[0m                          \e[32m[=================] \e[0m"
-    @ echo
-
-branch-delete: ## Delete local branch
-##  |Usages:
-##  |   $ make branch-delete name=<branch_name>
-    @ echo
-    @ echo -e "\e[32m[=================] \e[0m DELETING BRANCH \e[32m[=================] \e[0m"
-    @ if [ -z "$(name)" ]; then read -p "Enter branch name: " branch && git branch -d $$branch; else git branch -d $$name; fi
-    @ echo -e "\e[32m[=================] \e[0m                 \e[32m[=================] \e[0m"
-    @ echo
-
-branch-wipe: ## Delete remote branch
-##  |Usages:
-##  |   $ make branch-remote-delete name=<branch_name>
-    @ echo
-    @ echo -e "\e[32m[=================] \e[0m DELETING LOCAL/REMOTE BRANCH \e[32m[=================] \e[0m"
-    @ if [ -z "$(name)" ]; then read -p "Enter branch name: " branch && git push --set-upstream origin --delete $$branch && git branch --delete $$branch; else git push --set-upstream origin --delete $$name && git branch --delete $$name; fi
-    @ echo -e "\e[32m[=================] \e[0m                              \e[32m[=================] \e[0m"
-    @ echo
-
-log: ## Show custom git log
-##  |Usages:
-##  |   $ make log
-##  |   $ make log LOGLNES=<number of commits>
-    @ echo
-    @ echo -e "\e[32m[=================] \e[0mGIT LOG: \e[33mLAST $(LOGLNES) COMMITS \e[32m[=================] \e[0m"
-    @ git --no-pager log -n $(LOGLNES) --graph --color --abbrev-commit --decorate --format=format:'%C(bold blue)%h%C(reset) - %C(bold cyan)%aD%C(reset) %C(bold green)(%ar)%C(reset)%C(bold yellow)%d%C(reset)%n''               %C(white)%s%C(reset) %C(dim white)- %an%C(reset)' --all | tac -b --separator=" * |"
-    # @ git log --pretty=format:"%h - %an, %ar : %s"
-    @ echo
-    @ echo -e "\e[32m[=================] \e[0m                          \e[32m[=================] \e[0m"
     @ echo
 
 push: ## Push all commited changes to remote
@@ -165,29 +167,117 @@ push: ## Push all commited changes to remote
     @ echo -e "\e[32m[=================] \e[0m                  \e[32m[=================] \e[0m"
     @ echo
 
-# #-----------------------------------------------------------------------------#
-# ##
-# ##-----------------------------------------------------------------------------
-# ##|                          Another Targets                                  |
-# ##-----------------------------------------------------------------------------
-# ##
-# #-----------------------------------------------------------------------------#
+.PHONY: branch
+branch: ## Show current branch
+##  |Usage:
+##  |   $ make branch
+##
+    @ CURRENT+="$(shell \
+                    git branch \
+                    | grep "\*" \
+                    | sed 's/\*//g' \
+                    | sed 's/ //g')"
+    @ echo
+    $(call log, "BRANCHES")
+    $(call log_keyvalue, Current, $$CURRENT)
+    @ echo
 
-# task-two: ## Print vars from .env file
-#     @echo $(somevariable)
+.PHONY: branch-all
+branch-all: ## Show current branches
+##  |Usage:
+##  |   $ make branch-all
+##
+    @ CURRENT+="$(shell git branch --show-current)"
+    @ LOCAL+="$(shell git branch --format="%(refname:short)")"
+    @ REMOTE+="$(shell git branch -r --format="%(refname:short)" | sed "s/origin\///g")"
+    @ echo
+    $(call log, BRANCHES)
+    $(call log_keyvalue, Current, $$CURRENT)
+    $(call log_keyvalue, Local, $$LOCAL)
+    $(call log_keyvalue, Remote, $$REMOTE)
+    @ echo
 
-# task-three: ## Print bash variable inside
-#     @hello="world"
-#     @echo $$hello
+branch-new: ## Create new local branch
+##  |Usage:
+##  |   $ make branch-new
+##  |   $ make branch-new name=<branch_name>
+##
+    @ echo
+    @ echo -e "\e[32m[=================] \e[0m CREATING NEW BRANCH \e[32m[=================] \e[0m"
+    @ if [ -z "$(name)" ]; then read -p "Enter branch name: " branch && git checkout -b $$branch; else git checkout -b $$name; fi
+    @ echo -e "\e[32m[=================] \e[0m                     \e[32m[=================] \e[0m"
+    @ echo
 
-# task-four: ## Print args from command line
-#     @echo "run: make task-four foo bar"
-#     @echo $(args)
+branch-push: ## Push current local branch to remote
+##  |Usage:
+##  |   $ make branch-push
+##
+    @ echo
+    @ echo -e "\e[32m[=================] \e[0m PUSHING BRANCH TO REMOTE \e[32m[=================] \e[0m"
+    @ git push --set-upstream origin $(shell git rev-parse --abbrev-ref HEAD)
+    @ echo -e "\e[32m[=================] \e[0m                          \e[32m[=================] \e[0m"
+    @ echo
 
-# task-five: ## Run command inside
-#     @get_comment=$$(grep other .env)
-#     @echo $$get_comment
+branch-delete: ## Delete local branch
+##  |Usage:
+##  |   $ make branch-delete name=<branch_name>
+##
+    @ echo
+    @ echo -e "\e[32m[=================] \e[0m DELETING BRANCH \e[32m[=================] \e[0m"
+    @ if [ -z "$(name)" ]; then read -p "Enter branch name: " branch && git branch -d $$branch; else git branch -d $$name; fi
+    @ echo -e "\e[32m[=================] \e[0m                 \e[32m[=================] \e[0m"
+    @ echo
 
+branch-wipe: ## Delete local/remote branch
+##  |Usage:
+##  |   $ make branch-remote-delete name=<branch_name>
+##
+    @ echo
+    @ echo -e "\e[32m[=================] \e[0m DELETING LOCAL/REMOTE BRANCH \e[32m[=================] \e[0m"
+    @ if [ -z "$(name)" ]; then read -p "Enter branch name: " branch && git push --set-upstream origin --delete $$branch && git branch --delete $$branch; else git push --set-upstream origin --delete $$name && git branch --delete $$name; fi
+    @ echo -e "\e[32m[=================] \e[0m                              \e[32m[=================] \e[0m"
+    @ echo
+
+#-----------------------------------------------------------------------------#
+##
+##-----------------------------------------------------------------------------
+##|                          Service Targets                                  |
+##-----------------------------------------------------------------------------
+##
+#-----------------------------------------------------------------------------#
+
+run: ## Run the service
+##  |Usage:
+##  |   $ make run
+##
+    @ $(info Starting service...)
+    @ honcho start
+
+#-----------------------------------------------------------------------------#
+##
+##-----------------------------------------------------------------------------
+##|                           Docker Targets                                  |
+##-----------------------------------------------------------------------------
+##
+#-----------------------------------------------------------------------------#
+
+build: ## Build and run the project service
+##  |Usage:
+##  |   $ make build
+##
+    @ echo -e "\e[32m[=================] \e[0m BUILDING DOCKER IMAGE \e[32m[=================] \e[0m"
+    @ read -p "Enter image name: " DOCKER_IMAGE_NAME
+    @ read -p "Enter image tag: " DOCKER_IMAGE_TAG
+    @ read -p "Enter build context dir: " DOCKER_BUILD_CONTEXT
+    @ BUILD_NAME_TAG=$$DOCKER_IMAGE_NAME:$$DOCKER_IMAGE_TAG
+    @ LOCAL_PORT=2000
+    @ CONTAINER_PORT=8000
+    @ cp Procfile api/
+    @ docker build -t $$BUILD_NAME_TAG $$DOCKER_BUILD_CONTEXT
+    @ rm api/Procfile
+    @ docker run -d -p $$LOCAL_PORT:$$CONTAINER_PORT $$BUILD_NAME_TAG
+    @ echo "ACCESS THE SERVICE AT: http://localhost:$$LOCAL_PORT"
+    @ echo -e "\e[32m[=================] \e[0m                      \e[32m[=================] \e[0m"
 
 # -----------------------------   DO NOT CHANGE   -----------------------------
 help:
@@ -197,6 +287,7 @@ help:
         | sed -e 's/\[32m##/[33m/'
     @echo
 
+# Prevents make from treating arguments as targets
 %:      # do not change
     @:    # do not change
 
