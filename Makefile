@@ -114,7 +114,7 @@ commit: ## Commit all changes
 .PHONY: commit-file
 commit-file: ## Commit specific file
 ##  |Usage:
-##  |   $ make commit-file <str: file | optional> <str: message | optional>
+##  |   $ make commit-file
 ##
     @ echo
     $(call log,"COMMITTING A SINGLE FILE")
@@ -138,17 +138,6 @@ commit-file: ## Commit specific file
 
         $(call log_keyvalue,"Commit","$$message"); \
     fi;
-    # elif [-z "$(message)"]; then
-    #     $(call log_prompt, Enter message); \
-    #     git commit -m "$$input"; \
-    # else \
-    #     git commit -m "$(message);" \
-    # fi
-    # else \
-    #     git add "$(file)" 2>/dev/null || $(call log_error, File "$(file)" do not exist!) \
-    #     && echo \
-    #     && exit 0;
-    # fi
     @ echo
 
 .PHONY: commit-delete
