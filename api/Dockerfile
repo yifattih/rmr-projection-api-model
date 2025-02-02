@@ -19,6 +19,7 @@ USER yifattih
 
 # Copy app-specific requirements
 COPY requirements.txt /api/
+COPY Procfile /api/
 
 # Update pip and and install requirements
 RUN  pip install --user --upgrade pip \
@@ -33,4 +34,4 @@ COPY src/ /api/src/
 EXPOSE 8000
 
 # Copy the app code into the container
-CMD ["uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "3"]
+CMD ["honcho", "start"]
