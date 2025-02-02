@@ -14,6 +14,7 @@ include makefiles/colors.mk
 include makefiles/messenger.mk
 
 
+
 # By default Makefile use tabs in indentation. This command allow to use SPACES
 # .RECIPEPREFIX +=                      # Make Version < 4.3
 .RECIPEPREFIX := $(.RECIPEPREFIX)       # Make Version = 4.3
@@ -75,8 +76,8 @@ log: ## Show custom git log
             $(call log_error,"Number of log entries must be an integer!") \
             && echo \
             && exit 0;
-        fi
-        git --no-pager log -n "$$input" --abbrev-commit --format=format:'%s' \
+        fi;
+        git --no-pager log -n "$(ARG1)" --abbrev-commit --format=format:"%s-- " | sed "s/-- /\n/g" \
         | sed -r \
         -e 's/([^(:]*)(\([^)]*\))(:)(.*)/ \x1b[30m\1\x1b[0m\x1b[36m\2\x1b[0m\x1b[37m\3\x1b[0m\x1b[33m\4\x1b[0m/g' \
         | tac; \
@@ -85,11 +86,11 @@ log: ## Show custom git log
         && echo \
 		&& exit 0; \
     else \
-        git --no-pager log -n "$(ARG1)" --abbrev-commit --format=format:'%s' \
+        git --no-pager log -n "$(ARG1)" --abbrev-commit --format=format:"%s-- " | sed "s/-- /\n/g" \
         | sed -r \
         -e 's/([^(:]*)(\([^)]*\))(:)(.*)/ \x1b[30m\1\x1b[0m\x1b[36m\2\x1b[0m\x1b[37m\3\x1b[0m\x1b[33m\4\x1b[0m/g' \
         | tac; \
-    fi
+    fi;
     @ echo
 
 commit: ## Commit all changes
