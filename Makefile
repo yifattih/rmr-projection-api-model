@@ -51,14 +51,14 @@ status: ## Show a git status glimpse
 ##  |   $ make status
 ##
     @ echo
-    $(call log, FILES CHANGES)
+    $(call log,"CHANGES")
     @ git diff --color --stat=$($(tput cols) - 3) HEAD | sed '$d; s/^ //' | sed 's/^/ /'
     @ echo
-    $(call log, SHORT SUMMARY)
-    $(call log_keyvalue, Modified, $(shell git status -s | grep "^.*M" | wc -l))
-    $(call log_keyvalue, Staged, $(shell git status -s | grep -e "^A.*" -e "^M.*" | grep -v "^.*D" | wc -l))
-    $(call log_keyvalue, Deleted, $(shell git status -s | grep "^.*D" | wc -l))
-    $(call log_keyvalue, Untracked, $(shell git status -s | grep "??" | wc -l))
+    $(call log,"FILES SUMMARY")
+    $(call log_keyvalue,"Modified", $(shell git status -s | grep "^.*M" | sed "s/^.M / /g"))
+    $(call log_keyvalue,"Staged", $(shell git status -s | grep -e "^A.*" -e "^M.*" | grep -v "^.*D" | sed -e "s/^A.* / /g" -e "s/^M.* / /g"))
+    $(call log_keyvalue,"Deleted", $(shell git status -s | grep "^.*D " | sed "s/^.*D / /g"))
+    $(call log_keyvalue,"Untracked", $(shell git status -s | grep "??" | sed "s/??/ /g"))
     @ echo
 
 log: ## Show custom git log
