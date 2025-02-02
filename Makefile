@@ -256,6 +256,7 @@ run: ## Run the service
 ##  |   $ make run
 ##
     @ $(info Starting service...)
+    export ENV="dev"
     @ honcho start
 
 #-----------------------------------------------------------------------------#
