@@ -1,4 +1,4 @@
-## Function to log messages
+## Canned Command Sequences
 define keyvaluecan
 	if [ -z "$(1)" ]; then \
 		echo; \
