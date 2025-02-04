@@ -13,13 +13,18 @@ gst: ## Show a git status glimpse
 ##
     @ echo
     @ $(call headercan,"CHANGES")
-    @ git diff --color --stat HEAD | sed '$d; s/^ //'
+    @ changes="$(shell git diff --color --stat HEAD | sed '$d; s/^ //')"
+    @ if [ -z "$$changes" ]; then \
+        $(call inform,"No file changes!"); \
+    else \
+        echo $$changes;
+    fi
     @ echo
-    $(call headercan,"FILES SUMMARY")
-    $(call keyvaluecan,"Modified",$(shell git status -s | grep "^.*M " | sed "s/^.M / /g"))
-    $(call keyvaluecan,"Staged",$(shell git status -s | grep -e "^A.*" -e "^M.*" | grep -v "^.*D" | sed -e "s/^A.* / /g" -e "s/^M.* / /g"))
-    $(call keyvaluecan,"Deleted",$(shell git status -s | grep "^.*D " | sed "s/^.*D / /g"))
-    $(call keyvaluecan,"Untracked",$(shell git status -s | grep "??" | sed "s/??/ /g"))
+    @ $(call headercan,"FILES SUMMARY")
+    @ $(call keyvaluecan,"Modified",$(shell git status -s | grep "^.*M " | sed "s/^.M / /g"))
+    @ $(call keyvaluecan,"Staged",$(shell git status -s | grep -e "^A.*" -e "^M.*" | grep -v "^.*D" | sed -e "s/^A.* / /g" -e "s/^M.* / /g"))
+    @ $(call keyvaluecan,"Deleted",$(shell git status -s | grep "^.*D " | sed "s/^.*D / /g"))
+    @ $(call keyvaluecan,"Untracked",$(shell git status -s | grep "??" | sed "s/??/ /g"))
     @ echo
 
 glog: ## Show custom git log
