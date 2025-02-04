@@ -1,1 +1,0 @@
-web: if [ "$ENV" = "dev" ]; then uvicorn --host 0.0.0.0 --port 8000 --workers 3 api.src.main:app; else uvicorn --host 0.0.0.0 --port 8000 --workers 3 src.main:app; fi

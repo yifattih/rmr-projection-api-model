@@ -90,7 +90,7 @@ class RMRModel:
             weight_loss_rate = input_data["weight_loss_rate"]
             duration = input_data["duration"]
 
-            # Validate input data and return descriptive error messages
+            # Validate values
             if not (19 < age <= 150):
                 return {
                     "error": f"Invalid age: {age}. Age must be between \
@@ -148,13 +148,10 @@ class RMRModel:
                     "exit_code": 1,
                 }
 
-            # Step 3: Return response on success
+            # Return success response
             return {
                 "input": input_data,
-                "output": {
-                    "rmr": rmr_result["result"],
-                    "time_projection": time_projection.tolist(),
-                },
+                "output": {"rmr": rmr_result["result"].tolist()},
                 "exit_code": 0,
             }
         except Exception as e:
