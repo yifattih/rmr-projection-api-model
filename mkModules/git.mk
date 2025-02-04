@@ -180,6 +180,16 @@ gcd: ## Delete last commit message
     @ echo
     @ $(call headercan, "DELETE LAST COMMIT")
     @ hash="$(shell git rev-parse --short HEAD)"
-    @ $(call keyvaluecan,"Hash","$$hash")
+    @ $(call keyvaluecan,"Hash",$$hash)
     @ git reset --soft HEAD~1
     @ echo
+
+gbr: ## Prints Git branches
+    @ echo
+    @ CURRENT+="$(shell git branch --show-current)"
+    @ LOCAL+="$(shell git branch --format="%(refname:short)")"
+    @ REMOTE+="$(shell git branch -r --format="%(refname:short)" | sed "s/origin\///g")"
+    @ $(call headercan,"BRANCHES")
+    @ $(call keyvaluecan,"Current",$$CURRENT)
+    @ $(call keyvaluecan,"Local",$$LOCAL)
+    @ $(call keyvaluecan,"Remote",$$REMOTE)
