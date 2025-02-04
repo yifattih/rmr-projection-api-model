@@ -5,7 +5,7 @@
 ##-----------------------------------------------------------------------------
 ##
 #-----------------------------------------------------------------------------#
-.PHONY: gst glog gcomm
+.PHONY: gst glog gc gcd gp gbr gbrn gbrp gbrd gbrw
 
 gst: ## Show a git status glimpse
 ##  |Usage:
@@ -73,7 +73,7 @@ glog: ## Show custom git log
     fi;
     @ echo
 
-gcomm: ## Stage files, prepare and execute commit
+gc: ## Stage files, prepare and execute cit
 ##  |Usage:
 ##  |   $ make gcommmit
 ##
@@ -171,4 +171,15 @@ gcomm: ## Stage files, prepare and execute commit
     @ echo
     @ git commit -m "$$message"
     @ $(call inform,"Done!")
+    @ echo
+
+gcd: ## Delete last commit message
+##  |Usage:
+##  |   $ make gcommd
+##
+    @ echo
+    @ $(call headercan, "DELETE LAST COMMIT")
+    @ hash="$(shell git rev-parse --short HEAD)"
+    @ $(call keyvaluecan,"Hash","$$hash")
+    @ git reset --soft HEAD~1
     @ echo
