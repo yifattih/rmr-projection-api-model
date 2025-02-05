@@ -1,6 +1,6 @@
 services:
   devcontainer:
-    container_name: development-service
+    container_name: development-env
     build: 
       context: .devcontainer
       dockerfile: Dockerfile
@@ -10,10 +10,10 @@ services:
     ports:
       - "8000:8000"
 
-  api-service:
-    container_name: api-service
+  api:
+    container_name: api
     build:
-      context: api_service
+      context: api
       dockerfile: Dockerfile
     network_mode: service:devcontainer   # Puts app and devcontainer in the same network so browsing http://127.0.0.1:8080 works
     environment:
